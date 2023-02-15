@@ -1,6 +1,9 @@
 
 # Get all records from Habit main table
 def select_all(conn, query):
+    """
+    Select all records from the Habit Main menu
+    """
     cur = conn.cursor()
     try:
         cur.execute(query)
@@ -10,3 +13,28 @@ def select_all(conn, query):
     rows = cur.fetchall()
 
     return rows
+
+def delete_habit(conn, query1, query2, name, period):
+    """
+    Delete Habit by name and period from DB (Habit_main and Habit_transaction)
+    """
+    cur = conn.cursor()
+    data_tuple = (name, period)
+    try:
+        cur.execute(query1, data_tuple)
+    except Exception as e:
+        print(e)
+    else:
+        rows = cur.fetchall()
+        habit_id = rows[0][0]
+        try:
+            cur.execute(query2, (habit_id,))
+        except Exception as e:
+            print(e)
+        else:
+            conn.commit()
+
+
+
+
+

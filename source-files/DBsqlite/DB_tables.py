@@ -27,7 +27,10 @@ SQL_CREATE_HABIT_TR_TABLE = """ CREATE TABLE IF NOT EXISTS habit_transaction (
                                         habit_name text NOT NULL,
                                         periodicity text NOT NULL,
                                         completion_date ANY,
-                                        habit_id integer NOT NULL,
+                                        habit_id integer,
                                         UNIQUE(habit_name, periodicity, habit_id),
-                                        FOREIGN KEY (id) REFERENCES habit_main (id)
+                                        CONSTRAINT fk_habit
+                                            FOREIGN KEY (habit_id) 
+                                            REFERENCES habit_main(id) 
+                                            ON DELETE CASCADE
                                     ); """

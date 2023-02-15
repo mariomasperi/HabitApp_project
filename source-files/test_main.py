@@ -63,6 +63,18 @@ def display_all_habits():
 
     print(t)
 
+def delete_habit():
+    """
+    Delete an existing Habit by NAME and PERIOD
+    """
+    # Getting habit properties via user prompt
+    habit_name = "TEST"
+    periodicity = "D"
+
+    q.delete_habit(conn, Constant.GET_HABIT_BY_NAME_PERIO, Constant.DELETE_HABIT, habit_name, periodicity)
+    print("deleting habit")
+
 if __name__ == '__main__':
     #create_habit()
-    display_all_habits()
+    #display_all_habits()
+    delete_habit()

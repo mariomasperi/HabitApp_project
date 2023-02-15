@@ -1,11 +1,25 @@
 import typer
 import habits_menu
+import analytics_menu
 import Constant
+import DBsqlite.DB_tables as db_create
+import DBsqlite.DB_data_connection as db
+from DBsqlite.DB_tables import SQL_CREATE_HABIT_TABLE
+from DBsqlite.DB_tables import SQL_CREATE_HABIT_TR_TABLE
 
 app = typer.Typer()
 # Initialize the global variables
-#Constant.init()
-app.add_typer(habits_menu.habits_menu, name="habit", help="Habit menu please use --help")
+# Init global variables
+Constant.init()
+conn = db.create_connection(Constant.database)
+if conn is not None:
+    # create habit table
+    db_create.create_table(conn, SQL_CREATE_HABIT_TABLE)
+    # create Habit transaction table
+    db_create.create_table(conn, SQL_CREATE_HABIT_TR_TABLE)
+
+app.add_typer(habits_menu.habits_menu, name="habit", help="Habit management menu")
+app.add_typer(analytics_menu.analytics_menu, name="analytics", help="Analytics module")
 
 if __name__ == '__main__':
     app()
