@@ -28,13 +28,13 @@ def create_habit(conn, habit):
     return cur.lastrowid
 
 #progress habit created
-def progress_bar(name):
+def progress_bar(name, param):
     total = 0
     for value in track(range(100), description="Processing..."):
         # Fake processing time
         time.sleep(0.01)
         total += 1
-    print("Habit {} created!".format(name))
+    print("Habit {} {}!".format(name, param))
 
 def create_transaction(conn, task):
     """

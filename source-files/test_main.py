@@ -9,6 +9,7 @@ from DBsqlite.DB_tables import SQL_CREATE_HABIT_TABLE
 from DBsqlite.DB_tables import SQL_CREATE_HABIT_TR_TABLE
 import DBsqlite.create_habit_tr_db as ct_tr
 import Queries as q
+import datetime
 from prettytable import PrettyTable
 
 Constant.init()
@@ -74,7 +75,26 @@ def delete_habit():
     q.delete_habit(conn, Constant.GET_HABIT_BY_NAME_PERIO, Constant.DELETE_HABIT, habit_name, periodicity)
     print("deleting habit")
 
+def mark_habit_completed():
+    """
+    Delete an existing Habit by NAME and PERIOD
+    """
+    # Getting habit properties via user prompt
+    habit_name = "RUN"
+    periodicity = "D"
+
+    completed_date = datetime.datetime.now()
+
+    q.update_habit_tr(conn, Constant.GET_HABIT_BY_NAME_PERIO, Constant.UPDATE_HABIT_TR, habit_name, periodicity,
+                      completed_date)
+
+
+def longest_streak():
+    items = q.get_long_streak(conn, Constant.INNER_JOIN_HABIT)
+
 if __name__ == '__main__':
     #create_habit()
     #display_all_habits()
-    delete_habit()
+    #delete_habit()
+    #mark_habit_completed()
+    longest_streak()

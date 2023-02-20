@@ -10,11 +10,17 @@ from DBsqlite.DB_tables import SQL_CREATE_HABIT_TABLE
 from DBsqlite.DB_tables import SQL_CREATE_HABIT_TR_TABLE
 import DBsqlite.create_habit_tr_db as ct_tr
 import DBsqlite.Queries as q
-from main import conn
 
 
 habits_menu = typer.Typer()
-
+# Init global variables
+Constant.init()
+conn = db.create_connection(Constant.database)
+if conn is not None:
+    # create habit table
+    db_create.create_table(conn, SQL_CREATE_HABIT_TABLE)
+    # create Habit transaction table
+    db_create.create_table(conn, SQL_CREATE_HABIT_TR_TABLE)
 
 @habits_menu.command()
 def create_habit():
@@ -36,9 +42,9 @@ def create_habit():
         # create habit on DB
         habit_id = ct.create_habit(conn, habit)
         # create new record in habit transaction table
-        if habit_id != 0:
+        if habit_id:
             ct_tr.create_habit_tr(conn, habit, habit_id)
-            ct.progress_bar(habit_name)
+            ct.progress_bar(habit_name, "created")
         else:
             print("error on Habit creation")
 
@@ -60,7 +66,7 @@ def delete_habit():
 
 
 @habits_menu.command()
-def mark_habit_completed(habit: str):
+def mark_habit_completed():
     """
     Mark habit as completed
     """
@@ -70,7 +76,17 @@ def mark_habit_completed(habit: str):
     while periodicity not in Constant.periodList:
         periodicity = str.upper(typer.prompt("Please use W for weekly and D for daily, not others value are allowed"))
 
-    completed_date = datetime.datetime.now()
+    flag = str.upper(typer.prompt("Are you sure you want to complete the habit (y/n)"))
+    if flag == "Y":
+        completed_date = datetime.datetime.now()
+        habit = q.update_habit_tr(conn, Constant.GET_HABIT_BY_NAME_PERIO, Constant.UPDATE_HABIT_TR,
+                          habit_name, periodicity, completed_date)
+        if habit:
+            ct.progress_bar(habit, "completed")
+        else:
+            print("error on Habit completion")
+
+
 
 
 
