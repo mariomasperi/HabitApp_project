@@ -33,17 +33,14 @@ def create_habit():
     while periodicity not in Constant.periodList:
         periodicity = str.upper(typer.prompt("Please use W for weekly and D for daily, not others value are allowed"))
     # Insert today as creation day
-    creation_date = datetime.datetime.now()
-    # create new Habit object
-    habit = Habit.Habit(habit_name, creation_date, periodicity)
+    creation_date = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     # if connection to the DB is in place lets create a new record
     # in the Habit_main DB table
     if conn is not None:
         # create habit on DB
-        habit_id = ct.create_habit(conn, habit)
-        # create new record in habit transaction table
+        habit_id = ct.create_habit(conn, habit_name, periodicity, creation_date )
+        # show progress bar if Habit is successfully created
         if habit_id:
-            ct_tr.create_habit_tr(conn, habit, habit_id)
             ct.progress_bar(habit_name, "created")
         else:
             print("error on Habit creation")
@@ -78,7 +75,8 @@ def mark_habit_completed():
 
     flag = str.upper(typer.prompt("Are you sure you want to complete the habit (y/n)"))
     if flag == "Y":
-        completed_date = datetime.datetime.now()
+        completed_date = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        #create habit in transactional table
         habit = q.update_habit_tr(conn, Constant.GET_HABIT_BY_NAME_PERIO, Constant.UPDATE_HABIT_TR,
                           habit_name, periodicity, completed_date)
         if habit:

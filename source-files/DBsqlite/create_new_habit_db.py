@@ -6,7 +6,7 @@ from rich.progress import track
 import time
 
 
-def create_habit(conn, habit):
+def create_habit(conn, name, period, creation_date):
     """
     Create a new habit into the habit_main table
     :param conn:
@@ -16,7 +16,7 @@ def create_habit(conn, habit):
 
     sql = ''' INSERT INTO habit_main(habit_name, periodicity , creation_date)
               VALUES(?,?,?) '''
-    data_tuple = (habit.name, habit.periodicty, habit.creation_date)
+    data_tuple = (name, period, creation_date)
     cur = conn.cursor()
     try:
         cur.execute(sql, data_tuple)

@@ -21,5 +21,5 @@ def init():
     UPDATE_HABIT_TR_STREAK = "UPDATE habit_transaction SET streak = ? WHERE habit_id = ?"
     GET_HABIT_TR_BY_ID = "SELECT * FROM habit_transaction where habit_id = ?"
     INNER_JOIN_HABIT = \
-        "SELECT habit_transaction.habit_name, habit_transaction.periodicity, habit_main.creation_date, habit_transaction.completion_date FROM habit_transaction LEFT JOIN habit_main ON habit_transaction.habit_id = habit_main.id;"
+        "SELECT habit_transaction.habit_name, habit_transaction.periodicity, habit_main.creation_date, habit_transaction.completion_date FROM habit_transaction LEFT JOIN habit_main ON habit_transaction.habit_id = habit_main.id ORDER BY habit_transaction.habit_name, habit_transaction.periodicity, habit_transaction.completion_date;"
 
