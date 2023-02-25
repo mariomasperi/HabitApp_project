@@ -90,7 +90,7 @@ def mark_habit_completed():
 
 
 def longest_streak():
-    items = q.get_long_streak(conn, Constant.INNER_JOIN_HABIT)
+    items = q.get_streak(conn, Constant.INNER_JOIN_HABIT)
 
 if __name__ == '__main__':
     #create_habit()

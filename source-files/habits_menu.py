@@ -69,16 +69,16 @@ def mark_habit_completed():
     """
     # Getting habit properties via user prompt
     habit_name = str.upper(typer.prompt("Please enter the habit name you want to mark as completed"))
-    periodicity = str.upper(typer.prompt("Please enter the habit periodicity w/d, use W for weekly and D for daily"))
-    while periodicity not in Constant.periodList:
-        periodicity = str.upper(typer.prompt("Please use W for weekly and D for daily, not others value are allowed"))
+    #periodicity = str.upper(typer.prompt("Please enter the habit periodicity w/d, use W for weekly and D for daily"))
+    #while periodicity not in Constant.periodList:
+    #    periodicity = str.upper(typer.prompt("Please use W for weekly and D for daily, not others value are allowed"))
 
     flag = str.upper(typer.prompt("Are you sure you want to complete the habit (y/n)"))
     if flag == "Y":
         completed_date = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         #create habit in transactional table
-        habit = q.update_habit_tr(conn, Constant.GET_HABIT_BY_NAME_PERIO, Constant.UPDATE_HABIT_TR,
-                          habit_name, periodicity, completed_date)
+        habit = q.update_habit_tr(conn, Constant.GET_HABIT_BY_NAME, Constant.UPDATE_HABIT_TR,
+                          habit_name, completed_date)
         if habit:
             ct.progress_bar(habit, "completed")
         else:

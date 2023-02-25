@@ -19,7 +19,7 @@ SQL_CREATE_HABIT_TABLE = """ CREATE TABLE IF NOT EXISTS habit_main (
                                         habit_name text NOT NULL,
                                         periodicity text NOT NULL,
                                         creation_date ANY,
-                                        UNIQUE(habit_name, periodicity)
+                                        UNIQUE(habit_name)
                                     ); """
 
 SQL_CREATE_HABIT_TR_TABLE = """ CREATE TABLE IF NOT EXISTS habit_transaction (
