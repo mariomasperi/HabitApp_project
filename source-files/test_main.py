@@ -3,14 +3,15 @@ import Habit
 from datetime import date
 import DBsqlite.DB_data_connection as db
 import DBsqlite.create_new_habit_db as ct
-import uuid
 import DBsqlite.DB_tables as db_create
 from DBsqlite.DB_tables import SQL_CREATE_HABIT_TABLE
 from DBsqlite.DB_tables import SQL_CREATE_HABIT_TR_TABLE
 import DBsqlite.create_habit_tr_db as ct_tr
 import Queries as q
+import analytics_function as analytics
 import datetime
 from prettytable import PrettyTable
+import operator
 
 Constant.init()
 conn = db.create_connection(Constant.database)
@@ -90,11 +91,56 @@ def mark_habit_completed():
 
 
 def longest_streak():
-    items = q.get_streak(conn, Constant.INNER_JOIN_HABIT)
+    items = analytics.get_streak(conn, Constant.INNER_JOIN_HABIT)
+    #Sort Habit object list by name and streak DESC
+    items_sort = sorted(items, key = lambda x: (x.name, -x._streak))
+    #Get only the longest streak by habit
+    final_list = analytics.get_longest_streak(items_sort)
+    # Print habit list
+    table = analytics.print_habit_analytics(final_list, Constant.long_streak)
+
+    print(table)
+
+def get_all_habits_byPerio():
+    """
+    Display all habits list by period, choose daily("D") or weekly("W")
+    """
+    periodicity = "D"
+    #Display habits list by period selected
+    items = analytics.display_habits(conn, Constant.GET_HABITS_BY_PERIO, periodicity)
+    t = PrettyTable(['Name', 'Period', 'Creation date'])
+    for i in items:
+        if i[2] == "W":
+            period = "weekly"
+        elif i[2] == "D":
+            period = "daily"
+
+        t.add_row([i[1], period, i[3]])
+
+    print(t)
+
+def longest_habit_streak_byHabit():
+    """
+    Display the longest run streak for a given Habit
+    Please insert the Habit name
+    """
+    habit_name = "RUN"
+    #Get all list of habits streak
+    habits_streak_list = analytics.get_streak(conn, Constant.INNER_JOIN_HABIT)
+    #Sort Habit object list by name and streak DESC
+    items_sort = sorted(habits_streak_list, key = lambda x: (x.name, -x._streak))
+    #Get long streak by Habit
+    habit = analytics.get_longest_streak(items_sort, habit_name)
+    #Print habit list
+    table = analytics.print_habit_analytics(habit, Constant.long_streak)
+
+    print(table)
 
 if __name__ == '__main__':
     #create_habit()
     #display_all_habits()
     #delete_habit()
     #mark_habit_completed()
-    longest_streak()
+    #longest_streak()
+    #get_all_habits_byPerio()
+    longest_habit_streak_byHabit()

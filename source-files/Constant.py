@@ -4,17 +4,19 @@ def init():
     """
     Initialization of global variables
     """
-    global database, periodList, GET_ALL_HABITS, \
+    global database, periodList, long_streak, GET_ALL_HABITS, \
         GET_HABIT_BY_NAME, DELETE_HABIT, UPDATE_HABIT_TR, GET_HABIT_TR_BY_ID, UPDATE_HABIT_TR_STREAK, \
-        INNER_JOIN_HABIT
+        INNER_JOIN_HABIT, GET_HABITS_BY_PERIO
 
     database = "/Users/u1127499/Desktop/HabitApp_project/identifier.sqlite"
     periodList = ["W", "D"]
+    long_streak = "Longest number of streak"
     """
     QUERY variables list
     """
     GET_ALL_HABITS = "SELECT * FROM habit_main"
     GET_HABIT_BY_NAME = "SELECT * FROM habit_main WHERE habit_name = ?"
+    GET_HABITS_BY_PERIO = "SELECT * FROM habit_main WHERE periodicity = ?"
     DELETE_HABIT = "DELETE FROM habit_main where id = ?"
     #UPDATE_HABIT_TR = "UPDATE habit_transaction SET completion_date = ? WHERE habit_id = ?"
     UPDATE_HABIT_TR = "INSERT INTO habit_transaction(habit_name, periodicity, completion_date, habit_id) VALUES (?,?,?,?)"
