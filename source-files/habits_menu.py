@@ -7,6 +7,7 @@ from DBsqlite.DB_tables import SQL_CREATE_HABIT_TR_TABLE
 import DBsqlite.Queries as q
 import analytics_function as analytics
 
+
 """
 This is the Habit menu, containing the following commands:
 
