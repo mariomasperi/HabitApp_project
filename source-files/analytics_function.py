@@ -68,19 +68,6 @@ def get_streak(conn, query):
                         completion_date = week_number_comp
                         range_up_completion = week_number_prev + 1
 
-                """
-                #count_day = completion_date - previous_date
-                if v[0] == "D":
-                    num_days = 1
-                else:
-                    num_days = 7
-                    range_up_completion = previous_date + timedelta(weeks=1)
-                """
-                """
-                if days passed from completion to creation date <= 1 for daily
-                and <= 7 for weekly, we do have a streak for the habit
-                """
-
                 #range_up_daily_completion = previous_date + timedelta(days=num_days)
                 if previous_date <= completion_date <= range_up_completion:
                     streak += 1
