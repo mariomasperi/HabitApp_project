@@ -1,3 +1,10 @@
+"""
+This python script contains all global variables used by the application:
+1. Database location
+2. analytics constant
+3. SQL queries
+"""
+
 
 
 def init():
