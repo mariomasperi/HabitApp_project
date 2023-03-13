@@ -1,9 +1,6 @@
 import sqlite3
 """
-This is the context manager class
-The class is used to manage all global parameters using an object-oriented architecture
-it includes SQL queries and database info
-
+The class is used to manage the DB connection using context manager
 """
 
 class DB_ContextManager:
