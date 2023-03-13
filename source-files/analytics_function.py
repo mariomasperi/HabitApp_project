@@ -6,15 +6,16 @@ from rich.progress import track
 import time
 
 
-def get_streak(conn, query):
+def get_streak(conn):
     """
     The queries extract the habits from the two tables executing a left join
     ordering the record from the oldest completion date
     """
-
+    INNER_JOIN_HABIT = \
+        "SELECT habit_transaction.habit_name, habit_transaction.periodicity, habit_main.creation_date, habit_transaction.completion_date FROM habit_transaction LEFT JOIN habit_main ON habit_transaction.habit_id = habit_main.id ORDER BY habit_transaction.habit_name, habit_transaction.periodicity, habit_transaction.completion_date;"
     cur = conn.cursor()
     try:
-        cur.execute(query)
+        cur.execute(INNER_JOIN_HABIT)
     except Exception as e:
         print(e)
     else:
@@ -128,12 +129,23 @@ def print_habit_analytics(items, param):
 
     return t
 
-def display_habits(conn, query, period=None):
-    items = q.select_all(conn, query, period)
+def display_habits(conn, period=None):
+    """
+    Get all habits items from habit_main table
+    """
+    if period:
+        GET_HABITS = "SELECT * FROM habit_main WHERE periodicity = ?"
+    else:
+        GET_HABITS = "SELECT * FROM habit_main"
+
+    items = q.select_all(conn, GET_HABITS, period)
     return items
 
 
 def progress_bar(name, param):
+    """
+    Display a progress bar in the terminal
+    """
     total = 0
     for value in track(range(100), description="Processing..."):
         # Fake processing time

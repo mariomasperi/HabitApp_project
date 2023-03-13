@@ -1,10 +1,10 @@
 import typer
-import Constant
 from prettytable import PrettyTable
 import DBsqlite.DB_tables as db_create
 from DBsqlite.DB_tables import SQL_CREATE_HABIT_TABLE
 from DBsqlite.DB_tables import SQL_CREATE_HABIT_TR_TABLE
 import analytics_function as analytics
+from context_manager import DB_ContextManager
 
 """
 This is the Analytics menu, containing the following commands:
@@ -16,15 +16,11 @@ This is the Analytics menu, containing the following commands:
 """
 
 analytics_menu = typer.Typer()
-# Init global variables
-Constant.init()
 #Establish connection to database if not done yet
-conn = db_create.create_connection(Constant.database)
-if conn is not None:
-    # create habit table
-    db_create.create_table(conn, SQL_CREATE_HABIT_TABLE)
-    # create Habit transaction table
-    db_create.create_table(conn, SQL_CREATE_HABIT_TR_TABLE)
+database = "/Users/u1127499/Desktop/HabitApp_project/identifier.sqlite"
+with DB_ContextManager(database) as conn:
+    if conn is not None:
+        db_create.create_tables(conn)
 
 @analytics_menu.command()
 def display_all_habits():
@@ -32,21 +28,23 @@ def display_all_habits():
     Display all Habits list
     """
     #Get all habits list
-    items = analytics.display_habits(conn, Constant.GET_ALL_HABITS)
-    if items:
-        #display habits information
-        t = PrettyTable(['Name', 'Period', 'Creation date'])
-        for i in items:
-            if i[2] == "W":
-                period = "weekly"
-            elif i[2] == "D":
-                period = "daily"
+    with DB_ContextManager(database) as conn:
+        if conn is not None:
+            items = analytics.display_habits(conn)
+            if items:
+                #display habits information
+                t = PrettyTable(['Name', 'Period', 'Creation date'])
+                for i in items:
+                    if i[2] == "W":
+                        period = "weekly"
+                    elif i[2] == "D":
+                        period = "daily"
 
-            t.add_row([i[1], period, i[3]])
+                    t.add_row([i[1], period, i[3]])
 
-        print(t)
-    else:
-        print ("No habits found")
+                print(t)
+            else:
+                print ("No habits found")
 
 @analytics_menu.command()
 def longest_habit_streak():
@@ -54,18 +52,21 @@ def longest_habit_streak():
     Return the longest number of streaks for all habits
     """
     #Get all list of habits streak
-    habits_streak_list = analytics.get_streak(conn, Constant.INNER_JOIN_HABIT)
-    if habits_streak_list:
-        #Sort Habit object list by name and streak DESC
-        items_sort = sorted(habits_streak_list, key = lambda x: (x.name, -x._streak))
-        #Get long streak by Habit
-        habit = analytics.get_longest_streak(items_sort)
-        #Print habit list
-        table = analytics.print_habit_analytics(habit, Constant.long_streak)
+    with DB_ContextManager(database) as conn:
+        if conn is not None:
+            habits_streak_list = analytics.get_streak(conn)
+            if habits_streak_list:
+                #Sort Habit object list by name and streak DESC
+                items_sort = sorted(habits_streak_list, key = lambda x: (x.name, -x._streak))
+                #Get long streak by Habit
+                habit = analytics.get_longest_streak(items_sort)
+                #Print habit list
+                long_streak = "Longest number of streak"
+                table = analytics.print_habit_analytics(habit, long_streak)
 
-        print(table)
-    else:
-        print("No habits found")
+                print(table)
+            else:
+                print("No habits found")
 
 
 @analytics_menu.command()
@@ -75,24 +76,27 @@ def get_all_habits_byPerio():
     """
     #Get periodicity from user input (choose daily or weekly)
     periodicity = str.upper(typer.prompt("Please enter the periodicity w/d, use W for weekly and D for daily"))
-    while periodicity not in Constant.periodList:
+    periodList = ["W", "D"]
+    while periodicity not in periodList:
         periodicity = str.upper(typer.prompt("Please use W for weekly and D for daily, not others value are allowed"))
     #Display habits list by period selected
-    items = analytics.display_habits(conn, Constant.GET_HABITS_BY_PERIO, periodicity)
-    if items:
-        # display habits information
-        t = PrettyTable(['Name', 'Period', 'Creation date'])
-        for i in items:
-            if i[2] == "W":
-                period = "weekly"
-            elif i[2] == "D":
-                period = "daily"
+    with DB_ContextManager(database) as conn:
+        if conn is not None:
+            items = analytics.display_habits(conn, periodicity)
+            if items:
+                # display habits information
+                t = PrettyTable(['Name', 'Period', 'Creation date'])
+                for i in items:
+                    if i[2] == "W":
+                        period = "weekly"
+                    elif i[2] == "D":
+                        period = "daily"
 
-            t.add_row([i[1], period, i[3]])
+                    t.add_row([i[1], period, i[3]])
 
-        print(t)
-    else:
-        print ("No habits found")
+                print(t)
+            else:
+                print ("No habits found")
 
 @analytics_menu.command()
 def longest_habit_streak_byHabit():
@@ -102,18 +106,21 @@ def longest_habit_streak_byHabit():
     """
     habit_name = str.upper(typer.prompt("Please enter the habit name"))
     #Get all list of habits streak
-    habits_streak_list = analytics.get_streak(conn, Constant.INNER_JOIN_HABIT)
-    if habits_streak_list:
-        #Sort Habit object list by name and streak DESC
-        items_sort = sorted(habits_streak_list, key = lambda x: (x.name, -x._streak))
-        #Get long streak by Habit
-        habit = analytics.get_longest_streak(items_sort, habit_name)
-        #Print habit list
-        table = analytics.print_habit_analytics(habit, Constant.long_streak)
+    with DB_ContextManager(database) as conn:
+        if conn is not None:
+            habits_streak_list = analytics.get_streak(conn)
+            if habits_streak_list:
+                #Sort Habit object list by name and streak DESC
+                items_sort = sorted(habits_streak_list, key = lambda x: (x.name, -x._streak))
+                #Get long streak by Habit
+                habit = analytics.get_longest_streak(items_sort, habit_name)
+                #Print habit list
+                long_streak = "Longest number of streak"
+                table = analytics.print_habit_analytics(habit, long_streak)
 
-        print(table)
-    else:
-        print("No habits found")
+                print(table)
+            else:
+                print("No habits found")
 
 
 

@@ -38,6 +38,7 @@ def create_habit(conn, name, period, creation_date):
               VALUES(?,?,?) '''
     data_tuple = (name, period, creation_date)
     cur = conn.cursor()
+    #cur = conn.cursor
     try:
         cur.execute(sql, data_tuple)
     except Exception as e:
@@ -47,14 +48,17 @@ def create_habit(conn, name, period, creation_date):
 
     return cur.lastrowid
 
-def delete_habit(conn, query1, query2, name):
+def delete_habit(conn, name):
     """
     Delete Habit by name and period from DB (Habit_main and Habit_transaction)
     """
+    GET_HABIT_BY_NAME = "SELECT * FROM habit_main WHERE habit_name = ?"
+    DELETE_HABIT = "DELETE FROM habit_main where id = ?"
+
     cur = conn.cursor()
     #data_tuple = (name, period)
     try:
-        cur.execute(query1, (name,))
+        cur.execute(GET_HABIT_BY_NAME, (name,))
     except Exception as e:
         logging.exception("Habit not found, error during query execution")
     else:
@@ -64,23 +68,25 @@ def delete_habit(conn, query1, query2, name):
         else:
             habit_id = rows[0][0]
             try:
-                cur.execute(query2, (habit_id,))
+                cur.execute(DELETE_HABIT, (habit_id,))
             except Exception as e:
                 print(e)
             else:
                 #commit and show progress bar deletion
                 conn.commit()
-                analytics.progress_bar(name, "deleted")
 
 
-def update_habit_tr(conn, query1, query2, name, date):
+
+def update_habit_tr(conn, name, date):
     """
     Update habit_transaction table completion date
     """
+    GET_HABIT_BY_NAME = "SELECT * FROM habit_main WHERE habit_name = ?"
+    UPDATE_HABIT_TR = "INSERT INTO habit_transaction(habit_name, periodicity, completion_date, habit_id) VALUES (?,?,?,?)"
     cur = conn.cursor()
     #data_tuple = (name, period)
     try:
-        cur.execute(query1, (name,))
+        cur.execute(GET_HABIT_BY_NAME, (name,))
     except Exception as e:
         print(e)
     else:
@@ -91,7 +97,7 @@ def update_habit_tr(conn, query1, query2, name, date):
         else:
             data_update_tuple = (name, rows[0][2], date, rows[0][0])
             try:
-                cur.execute(query2, data_update_tuple)
+                cur.execute(UPDATE_HABIT_TR, data_update_tuple)
             except Exception as e:
                 print(e)
             else:
