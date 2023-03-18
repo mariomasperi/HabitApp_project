@@ -21,10 +21,11 @@ habits_menu = typer.Typer()
 #Constant.init()
 #conn = db_create.create_connection(Constant.database)
 #Establish connection to database if not done yet
-database = "/Users/u1127499/Desktop/HabitApp_project/identifier.sqlite"
+#database = "/Users/u1127499/Desktop/HabitApp_project/identifier.sqlite"
+database = "habits.db"
 with DB_ContextManager(database) as conn:
     if conn is not None:
-        db_create.create_tables(conn)
+        bool = db_create.create_tables(conn)
     # create habit table
     #db_create.create_table(conn, SQL_CREATE_HABIT_TABLE)
     # create Habit transaction table

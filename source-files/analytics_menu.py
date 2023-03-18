@@ -17,10 +17,13 @@ This is the Analytics menu, containing the following commands:
 
 analytics_menu = typer.Typer()
 #Establish connection to database if not done yet
-database = "/Users/u1127499/Desktop/HabitApp_project/identifier.sqlite"
+#database = "/Users/u1127499/Desktop/HabitApp_project/identifier.sqlite"
+
+database = "habits.db"
+
 with DB_ContextManager(database) as conn:
     if conn is not None:
-        db_create.create_tables(conn)
+        bool = db_create.create_tables(conn)
 
 @analytics_menu.command()
 def display_all_habits():
@@ -58,7 +61,7 @@ def longest_habit_streak():
             if habits_streak_list:
                 #Sort Habit object list by name and streak DESC
                 items_sort = sorted(habits_streak_list, key = lambda x: (x.name, -x._streak))
-                #Get long streak by Habit
+                #Get long streaks in habits list
                 habit = analytics.get_longest_streak(items_sort)
                 #Print habit list
                 long_streak = "Longest number of streak"

@@ -43,18 +43,6 @@ def create_connection(db_file):
 
     return conn
 
-# Habit table creation
-def create_table(conn, create_table_sql):
-    """ create a table from the create_table_sql statement
-    :param conn: Connection object
-    :param create_table_sql: a CREATE TABLE statement
-    :return:
-    """
-    try:
-        c = conn.cursor()
-        c.execute(create_table_sql)
-    except Exception as Argument:
-        logging.exception("Error in habit DB creation")
 
 def create_tables(conn):
     """ create a table from the create_table_sql statement
@@ -68,5 +56,6 @@ def create_tables(conn):
         c.execute(SQL_CREATE_HABIT_TR_TABLE)
     except Exception as Argument:
         logging.exception("Error in habit DB creation")
+    else:
+        return True
 
-#GLOBAL constant variables for tables creation

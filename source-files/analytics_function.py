@@ -141,6 +141,15 @@ def display_habits(conn, period=None):
     items = q.select_all(conn, GET_HABITS, period)
     return items
 
+def get_habit_byname(conn, name=None):
+    """
+    Get habits from habit_main table by name
+    """
+    GET_HABIT = "SELECT * FROM habit_main WHERE habit_name like ? ORDER BY habit_name DESC"
+
+    items = q.select_all(conn, GET_HABIT, name)
+
+    return items
 
 def progress_bar(name, param):
     """

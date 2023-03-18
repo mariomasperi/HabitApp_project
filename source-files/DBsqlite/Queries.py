@@ -74,6 +74,7 @@ def delete_habit(conn, name):
             else:
                 #commit and show progress bar deletion
                 conn.commit()
+                return True
 
 
 
