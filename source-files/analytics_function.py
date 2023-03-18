@@ -11,50 +11,48 @@ def get_streak(conn):
     The queries extract the habits from the two tables executing a left join
     ordering the record from the oldest completion date
     """
-    INNER_JOIN_HABIT = \
-        "SELECT habit_transaction.habit_name, habit_transaction.periodicity, habit_main.creation_date, habit_transaction.completion_date FROM habit_transaction LEFT JOIN habit_main ON habit_transaction.habit_id = habit_main.id ORDER BY habit_transaction.habit_name, habit_transaction.periodicity, habit_transaction.completion_date;"
+    HISTORY_QUERY = "SELECT * FROM habit_transaction"
+
     cur = conn.cursor()
     try:
-        cur.execute(INNER_JOIN_HABIT)
+        # Execute the query left join habit_main and habit_transaction
+        cur.execute(HISTORY_QUERY)
     except Exception as e:
         print(e)
     else:
         habit_long_list = []
         rows = cur.fetchall()
         habit_dict = {}
-
         """
         Create dictionary for long streak calculation
         with HABIT NAME as key
         """
         for i, row in enumerate(rows):
-            if row[0] in habit_dict:
-                habit_dict[row[0]].append(row[1:])
+            if row[1] in habit_dict:
+                habit_dict[row[1]].append(row[2:])
             else:
-                habit_dict[row[0]] = [row[1:]]
+                habit_dict[row[1]] = [row[2:]]
         #Calculate the long streak with the dictionary
         for key in habit_dict:
             values = habit_dict[key]
             streak = 0
             for i, v in enumerate(values):
-                #the code is taking the ifrst record as first date to be compared in the next
-                #iterations
-                if i == 0:
-                    #previous_date = datetime.strptime(v[1], "%Y-%m-%d %H:%M:%S")
-                    temp_previous_date = datetime.strptime(values[1][2], "%Y-%m-%d %H:%M:%S")
-                else:
-                    temp_previous_date = datetime.strptime(values[i - 1][2], "%Y-%m-%d %H:%M:%S")
-
-
-                temp_completion_date = datetime.strptime(v[2], "%Y-%m-%d %H:%M:%S")
+                # setup the completion date to compare with the next record
+                temp_previous_date = datetime.strptime(values[i][1], "%Y-%m-%d %H:%M:%S")
+                # set up the completion date of the next record
+                temp_completion_date = datetime.strptime(values[i+1][1], "%Y-%m-%d %H:%M:%S")
                 """
-                Check if the habit has been completed two times 
-                in the same day if DAILY frequency
+                Check if the habit has been completed two times in the same day if DAILY frequency
                 and if it has been completed two time in the same week for WEEKLY frequency
+                If not it the code is checking the following:
+                - Daily: checking if the completion date happens in 24 hours range, if yes its a valid streak
+                - Weekly: checking if the completion date happens during the next week range, if yes its a valid streak
                 """
                 if v[0] == "D":
-                    if temp_previous_date.day == temp_completion_date.day:
+                    if temp_previous_date.day == temp_completion_date.day and i != (len(values)-2):
                         continue
+                    elif temp_previous_date.day == temp_completion_date.day and i == (len(values) - 2):
+                        break
                     else:
                         previous_date   = temp_previous_date
                         completion_date = temp_completion_date
@@ -62,8 +60,10 @@ def get_streak(conn):
                 else:
                     week_number_prev = temp_previous_date.isocalendar().week
                     week_number_comp = temp_completion_date.isocalendar().week
-                    if week_number_prev == week_number_comp:
+                    if week_number_prev == week_number_comp and i != (len(values)-2):
                         continue
+                    elif week_number_prev == week_number_comp and i == (len(values)-2):
+                        break
                     else:
                         previous_date = week_number_prev
                         completion_date = week_number_comp
@@ -87,27 +87,25 @@ def get_streak(conn):
                 if this is the last record add the streak and habit info
                 to the habit object
                 """
-                if i == (len(values)-1):
+                if i == (len(values)-2):
                     streak_habit = Habit.Habit(key, previous_date, v[0])
                     streak_habit.add_streak(streak)
                     #append object to a list
                     habit_long_list.append(streak_habit)
+                    break
+
 
     return habit_long_list
 
 
 def get_longest_streak(list_habits, param=None):
-    #final_dict = {"habit": [], "streak": [], "periodicity": []}
+    """
+    The function get the longest streak with enables filter parameter as habit name
+    """
     final_dict = {}
-    support_list = []
     for i, habit in enumerate(list_habits):
-        """
-        if habit.name not in final_dict["habit"]:
-            final_dict["habit"].append(habit.name)
-            final_dict["streak"].append(habit._streak)
-            final_dict["periodicity"].append(habit.periodicity)
-        """
-        #If enabled parameter habit name filter, select only the habit requested
+        # If enabled parameter habit name filter, select only the habit requested
+        # else select all habits
         if param:
             if param == habit.name and param not in final_dict:
                 final_dict[habit.name] = (habit.periodicity, habit._streak)
@@ -118,6 +116,9 @@ def get_longest_streak(list_habits, param=None):
     return final_dict
 
 def print_habit_analytics(items, param):
+    """
+    Function to print the habit list in PrettyTable format
+    """
     t = PrettyTable(['Name', 'Period', param])
     for key, values in items.items():
         if values[0] == "W":
@@ -143,7 +144,7 @@ def display_habits(conn, period=None):
 
 def get_habit_byname(conn, name=None):
     """
-    Get habits from habit_main table by name
+    Get habits from habit_main table by habit name
     """
     GET_HABIT = "SELECT * FROM habit_main WHERE habit_name like ? ORDER BY habit_name DESC"
 

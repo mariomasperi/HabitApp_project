@@ -17,19 +17,12 @@ This is the Habit menu, containing the following commands:
 """
 
 habits_menu = typer.Typer()
-# Init global variables
-#Constant.init()
-#conn = db_create.create_connection(Constant.database)
-#Establish connection to database if not done yet
-#database = "/Users/u1127499/Desktop/HabitApp_project/identifier.sqlite"
+
 database = "habits.db"
+#Create the DB connections and tables
 with DB_ContextManager(database) as conn:
     if conn is not None:
         bool = db_create.create_tables(conn)
-    # create habit table
-    #db_create.create_table(conn, SQL_CREATE_HABIT_TABLE)
-    # create Habit transaction table
-    #db_create.create_table(conn, SQL_CREATE_HABIT_TR_TABLE)
 
 @habits_menu.command()
 def create_habit():
@@ -40,6 +33,7 @@ def create_habit():
     habit_name = str.upper(typer.prompt("Please enter the habit name"))
     periodicity = str.upper(typer.prompt("Please enter the periodicity w/d, use W for weekly and D for daily"))
     periodList = ["W", "D"]
+    # Check if the period is weekly or daily
     while periodicity not in periodList:
         periodicity = str.upper(typer.prompt("Please use W for weekly and D for daily, not others value are allowed"))
     # Insert today as creation day
@@ -64,15 +58,16 @@ def delete_habit():
     """
     # Getting habit properties via user prompt
     habit_name = str.upper(typer.prompt("Please enter the habit name you want to delete"))
-    """
-    periodicity = str.upper(typer.prompt("Please enter the habit periodicity w/d, use W for weekly and D for daily"))
-    while periodicity not in Constant.periodList:
-        periodicity = str.upper(typer.prompt("Please use W for weekly and D for daily, not others value are allowed"))
-    """
+
     with DB_ContextManager(database) as conn:
         if conn is not None:
-            q.delete_habit(conn, habit_name)
-            analytics.progress_bar(habit_name, "deleted")
+            # Delete habit from DB
+            check = q.delete_habit(conn, habit_name)
+            if check == True:
+            # Display the progress bar
+                analytics.progress_bar(habit_name, "deleted")
+            else:
+                print("error on deletion")
 
 
 
@@ -84,9 +79,6 @@ def mark_habit_completed():
     """
     # Getting habit properties via user prompt
     habit_name = str.upper(typer.prompt("Please enter the habit name you want to mark as completed"))
-    #periodicity = str.upper(typer.prompt("Please enter the habit periodicity w/d, use W for weekly and D for daily"))
-    #while periodicity not in Constant.periodList:
-    #    periodicity = str.upper(typer.prompt("Please use W for weekly and D for daily, not others value are allowed"))
     #Ask confirmation to the user about completing an habit
     flag = str.upper(typer.prompt("Are you sure you want to complete the habit (y/n)"))
     if flag == "Y":
@@ -94,14 +86,13 @@ def mark_habit_completed():
         completed_date = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         with DB_ContextManager(database) as conn:
             if conn is not None:
-            #create habit in transactional table
+            # Insert  habit in transactional table
                 habit = q.update_habit_tr(conn, habit_name, completed_date)
-            #if habit is created shows a progress bar otherwise printout an error
+            # If habit is created shows a progress bar otherwise printout an error
                 if habit:
                     analytics.progress_bar(habit, "completed")
                 else:
                     print("error on Habit completion")
-
 
 
 if __name__ == "__main__":

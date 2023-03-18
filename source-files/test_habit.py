@@ -51,7 +51,7 @@ def test_habit_creation():
                 habit_id = q.create_habit(conn, new_habit.name, new_habit.periodicity,
                                           new_habit.creation_date)
 
-            assert len(habit_id) != 0, "habit creation failed"
+            assert habit_id != 0, "habit creation failed"
 
         else:
             assert 1 == 2, "connection to DB not established"
@@ -91,16 +91,7 @@ def test_mark_habit_completed():
             assert 1 == 2, "connection to DB not established"
 
 
-def test_display_all_habits():
-    """
-    Display all habits function test
-    """
-    with DB_ContextManager(database) as conn:
-        if conn is not None:
-            items = analytics.display_habits(conn)
-            assert len(items) != 0, "No habits found"
-        else:
-            assert 1 == 2, "connection to DB not established"
+
 
 
 

@@ -16,12 +16,10 @@ This is the Analytics menu, containing the following commands:
 """
 
 analytics_menu = typer.Typer()
-#Establish connection to database if not done yet
-#database = "/Users/u1127499/Desktop/HabitApp_project/identifier.sqlite"
-
 database = "habits.db"
 
 with DB_ContextManager(database) as conn:
+    # Connect to database and create tables if don't exist yet
     if conn is not None:
         bool = db_create.create_tables(conn)
 
@@ -33,6 +31,7 @@ def display_all_habits():
     #Get all habits list
     with DB_ContextManager(database) as conn:
         if conn is not None:
+            # Get all habits list from habit_main table
             items = analytics.display_habits(conn)
             if items:
                 #display habits information
@@ -54,10 +53,12 @@ def longest_habit_streak():
     """
     Return the longest number of streaks for all habits
     """
-    #Get all list of habits streak
+    # Connect to the database
     with DB_ContextManager(database) as conn:
         if conn is not None:
+            # Get streak habit list
             habits_streak_list = analytics.get_streak(conn)
+            # if list is not empty get the streak numbers
             if habits_streak_list:
                 #Sort Habit object list by name and streak DESC
                 items_sort = sorted(habits_streak_list, key = lambda x: (x.name, -x._streak))
@@ -77,12 +78,13 @@ def get_all_habits_byPerio():
     """
     Display all habits list by period, choose daily("D") or weekly("W")
     """
-    #Get periodicity from user input (choose daily or weekly)
+    # Get periodicity from user input (choose daily or weekly)
     periodicity = str.upper(typer.prompt("Please enter the periodicity w/d, use W for weekly and D for daily"))
     periodList = ["W", "D"]
+    # Check if period is weekly or daily
     while periodicity not in periodList:
         periodicity = str.upper(typer.prompt("Please use W for weekly and D for daily, not others value are allowed"))
-    #Display habits list by period selected
+    # Display habits list by period selected
     with DB_ContextManager(database) as conn:
         if conn is not None:
             items = analytics.display_habits(conn, periodicity)
@@ -108,16 +110,16 @@ def longest_habit_streak_byHabit():
     Please insert the Habit name
     """
     habit_name = str.upper(typer.prompt("Please enter the habit name"))
-    #Get all list of habits streak
+    # Get all list of habits streak
     with DB_ContextManager(database) as conn:
         if conn is not None:
             habits_streak_list = analytics.get_streak(conn)
             if habits_streak_list:
-                #Sort Habit object list by name and streak DESC
+                # Sort Habit object list by name and streak DESC
                 items_sort = sorted(habits_streak_list, key = lambda x: (x.name, -x._streak))
-                #Get long streak by Habit
+                # Get long streak by Habit
                 habit = analytics.get_longest_streak(items_sort, habit_name)
-                #Print habit list
+                # Print habit list
                 long_streak = "Longest number of streak"
                 table = analytics.print_habit_analytics(habit, long_streak)
 

@@ -17,6 +17,9 @@ This is the Habit class
 class Habit:
     #Constructor
     def __init__(self, name, creation_date, periodicity):
+        """
+        Constructor of the habit class
+        """
         #Instance variable
         self._completion_date = None
         self._streak = 0
@@ -25,9 +28,15 @@ class Habit:
         self.periodicity = periodicity
 
     def add_streak(self, streak):
+        """
+        add new streak
+        """
         self._streak = streak
     
     def set_completion_date(self, date):
+        """
+        set completion date
+        """
         self._completion_date = date
 
 

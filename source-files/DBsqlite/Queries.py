@@ -36,9 +36,9 @@ def create_habit(conn, name, period, creation_date):
 
     sql = ''' INSERT INTO habit_main(habit_name, periodicity , creation_date)
               VALUES(?,?,?) '''
+    # Create a new entry in the habit_main table the parameters
     data_tuple = (name, period, creation_date)
     cur = conn.cursor()
-    #cur = conn.cursor
     try:
         cur.execute(sql, data_tuple)
     except Exception as e:
@@ -54,9 +54,10 @@ def delete_habit(conn, name):
     """
     GET_HABIT_BY_NAME = "SELECT * FROM habit_main WHERE habit_name = ?"
     DELETE_HABIT = "DELETE FROM habit_main where id = ?"
-
+    # Get the cursor
     cur = conn.cursor()
-    #data_tuple = (name, period)
+    # execute the query and delete the habit from both tables habit_main and
+    # habit_transaction
     try:
         cur.execute(GET_HABIT_BY_NAME, (name,))
     except Exception as e:
@@ -76,8 +77,6 @@ def delete_habit(conn, name):
                 conn.commit()
                 return True
 
-
-
 def update_habit_tr(conn, name, date):
     """
     Update habit_transaction table completion date
@@ -85,19 +84,22 @@ def update_habit_tr(conn, name, date):
     GET_HABIT_BY_NAME = "SELECT * FROM habit_main WHERE habit_name = ?"
     UPDATE_HABIT_TR = "INSERT INTO habit_transaction(habit_name, periodicity, completion_date, habit_id) VALUES (?,?,?,?)"
     cur = conn.cursor()
-    #data_tuple = (name, period)
+    # Execute query to get the data from the habit_main table
     try:
         cur.execute(GET_HABIT_BY_NAME, (name,))
     except Exception as e:
         print(e)
     else:
+        # Retrieve records from habit_main
         rows = cur.fetchall()
         if not rows:
             logging.exception("Habit not found, error during query execution")
             habit = None
         else:
+            # Create tuple with habit_name, period, completion date and id
             data_update_tuple = (name, rows[0][2], date, rows[0][0])
             try:
+                # Insert data into the habit_transaction table
                 cur.execute(UPDATE_HABIT_TR, data_update_tuple)
             except Exception as e:
                 print(e)
@@ -108,17 +110,7 @@ def update_habit_tr(conn, name, date):
 
     return habit
 
-"""
-class ValueCache(object):
-    def __init__(self, val=None):
-        self.val = val
-    def update(self, new):
-        if self.val == new:
-            return False
-        else:
-            self.val = new
-            return True
-"""
+
 
 
 
