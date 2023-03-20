@@ -15,13 +15,19 @@ The project use externaly libraries to function:
 2. **PrettyTable** library - https://pypi.org/project/prettytable/
   This library used to print tables in attractive ASCII form, use pip command to install from the terminal:
 
-  * python -m pip install -U prettytable
+  *python -m pip install -U prettytable*
   
 3. **Rich** library - https://pypi.org/project/rich/
   This library is used to create beautiful formatting in the terminal, use pip command to install from the terminal:
   
-  python -m pip install rich
+  *python -m pip install rich*
   
+  
+# How to Use?
+
+
+https://user-images.githubusercontent.com/10673190/226422659-42877ba8-4b90-44f7-98d9-4a3d2d8c762d.mov
+
 
 
   
