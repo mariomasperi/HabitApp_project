@@ -35,7 +35,7 @@ def get_streak(conn):
         #Calculate the long streak with the dictionary
         for key in habit_dict:
             values = habit_dict[key]
-            streak = 0
+            streak = 1
             for i, v in enumerate(values):
                 # setup the completion date to compare with the next record
                 temp_previous_date = datetime.strptime(values[i][1], "%Y-%m-%d %H:%M:%S")
@@ -81,7 +81,7 @@ def get_streak(conn):
                     streak_habit.add_streak(streak)
                      # append object to a list
                     habit_long_list.append(streak_habit)
-                    streak = 0
+                    streak = 1
 
                 """
                 if this is the last record add the streak and habit info

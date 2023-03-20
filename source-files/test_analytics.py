@@ -1,7 +1,4 @@
-import analytics_function
 from context_manager import DB_ContextManager
-import DBsqlite.DB_tables as db_create
-import DBsqlite.Queries as q
 import analytics_function as analytics
 
 database = "habits.db"

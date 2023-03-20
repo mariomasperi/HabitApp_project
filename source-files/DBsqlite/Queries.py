@@ -1,5 +1,4 @@
 import logging
-import analytics_function as analytics
 """
 This is the Function-pool containing all functions
 used to query in the Sqlite database tables

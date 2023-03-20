@@ -1,8 +1,6 @@
 import typer
 import datetime
 import DBsqlite.DB_tables as db_create
-from DBsqlite.DB_tables import SQL_CREATE_HABIT_TABLE
-from DBsqlite.DB_tables import SQL_CREATE_HABIT_TR_TABLE
 import DBsqlite.Queries as q
 import analytics_function as analytics
 from context_manager import DB_ContextManager

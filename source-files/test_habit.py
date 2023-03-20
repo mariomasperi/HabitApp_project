@@ -1,6 +1,5 @@
 import Habit
 import datetime
-
 import analytics_function
 from context_manager import DB_ContextManager
 import DBsqlite.DB_tables as db_create
